@@ -1,19 +1,38 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View, Alert } from 'react-native'
 import React,{useState, useEffect} from 'react'
 import Input from '../Components/Input'
 import Button from '../Components/Button'
 import Ionic from 'react-native-vector-icons/Feather'
 import { useNavigation } from '@react-navigation/native'
+import { signInWithEmailAndPassword } from 'firebase/auth'
+import { auth } from '../Components/FireBaseConfig'
 
 const Login = () => {
     const Navigation = useNavigation()
 
     const [Email, setEmail ] = useState('')
-    const [password, setPassword] = useState('')
+    const [Password, setPassword] = useState('')
     const [showPassword, setShowPassword] = useState(false)
 
     const toogleEye =() => {
         setShowPassword(!showPassword);
+    }
+
+    const OnLoginPressed = async () => {
+        try{
+            const UserCred = await signInWithEmailAndPassword(auth, Email, Password)
+            const user = UserCred.user;
+            // const Email = user.email
+
+            Navigation.replace('AppScreen')
+        }catch(error){
+            Alert.alert('Alert Title', 'Credentials Check',[
+                {
+                    text: 'ok'
+                },
+                console.log(error)
+            ])
+        }
     }
 
     return (
@@ -28,7 +47,7 @@ const Login = () => {
         />
         <Input
             placeholder='Password...'
-            value={password}
+            value={Password}
             onChangeText={password => setPassword(password)}
             secureTextEntry={!showPassword}
             Icon={showPassword ? 'eye' : 'eye-off'}
@@ -37,7 +56,7 @@ const Login = () => {
         <Button
             text='LOGIN'
             onPress={() => {
-            Navigation.replace('AppScreen')
+                OnLoginPressed()
             }}
         />
         <Button

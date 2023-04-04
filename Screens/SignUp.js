@@ -1,9 +1,12 @@
-import { StyleSheet, Text, View, SafeAreaView, ScrollView } from 'react-native'
+import { StyleSheet, Text, View, SafeAreaView, ScrollView, Alert } from 'react-native'
 import React, { useState } from 'react'
 import Input from '../Components/Input'
 import Button from '../Components/Button'
 import Ionic from 'react-native-vector-icons/Feather'
 import { useNavigation } from '@react-navigation/native'
+import { auth, Db } from  '../Components/FireBaseConfig'
+import { collection, doc, setDoc } from 'firebase/firestore'
+import { createUserWithEmailAndPassword } from 'firebase/auth'
 
 const Socials = () => {
     return(
@@ -42,17 +45,30 @@ const SignUp = ({navigation}) => {
     const onPrivatePolicyPressed = () => {
         console.warn("Private Policy")
     }
-    const OnRegisterPress = async () => {
-    try{
-        const UserCred = await createUserWithEmailAndPassword(auth, Email, Password);
-        const user = UserCred.user;
-        console.log(user.email);
-        const Email = user.email
+    const OnSignUpPress = async () => {
+        try{
+            const UserCred = await createUserWithEmailAndPassword(auth, Email, Password, Username);
+            const user = UserCred.user;
+            const email = user.email
 
-        navigation.replace('AppScreen');
-    } catch (error) {
-        console.log(error.code, error.message)
-    }
+            console.log(email);
+
+            const docRef = doc(collection(Db, 'User'), user.uid)
+            await setDoc(docRef, {
+                Username: Username,
+                EmailAddress: Email,
+                Password: Password
+        })
+            navigation.navigate('AppScreen')
+        }catch (error){
+            Alert.alert('Alert Title', 'Incorrect Credetials',[
+                {
+                    text: 'Ok',
+                }
+            ])
+            console.log(error)
+        }
+
     }
 
     return (
@@ -80,7 +96,7 @@ const SignUp = ({navigation}) => {
             />
             <Button
                 text='REGISTER'
-                onPress={() => {console.log('Logged In')}}
+                onPress={() => {OnSignUpPress()}}
             />
             <Text style={{color: "gray", fontSize: 15, marginVertical: 10, marginHorizontal: 20}}>
                     By registering, confirm that you accept out
