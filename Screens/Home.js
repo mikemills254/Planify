@@ -1,12 +1,16 @@
-import { StyleSheet, Text, View, SafeAreaView, ScrollView, Dimensions, useState} from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, ScrollView, Dimensions, useState, TouchableOpacity} from 'react-native';
 import React from 'react';
 import { FlatList, StatusBar } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
+import { useNavigation } from '@react-navigation/native';
+import AddTask from './AddTask';
 
 
 const _COLOR = '#00ADB5'
 
 const Home = () => {
+    const navigation = useNavigation();
+
     const DATA = [
         {
           id: 1,
@@ -31,6 +35,10 @@ const Home = () => {
           <Text style={styles.title}>{title}</Text>
         </View>
       );
+      const handleAddTaskPress = () => {
+        navigation.navigate('AddTask');
+      };
+
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView style={styles.container} showsHorizontalScrollIndicator={false}>
@@ -42,13 +50,9 @@ const Home = () => {
                     keyExtractor={item => item.id.toString} horizontal={true}
             />
             <Text style={styles.headerInfo}>TODAY'S TASK</Text>
-            {/* <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Icon name="circle-o" size={20} color="#900" />
-                <Text style={{ marginLeft: 10 }}>Create a new template</Text>
-            </View> */}
-             <View style={styles.plusIcon}>
-                <Icon name='plus' size={25} color='aqua'/>
-            </View>
+            <TouchableOpacity style={styles.plusIcon} onPress={handleAddTaskPress}>
+                <Icon name='plus' size={25} color='#00ADB5'/>
+            </TouchableOpacity>
             </ScrollView>
         </SafeAreaView>
     )

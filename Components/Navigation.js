@@ -12,6 +12,7 @@
     const _COLOR = '#00ADB5'
     import { useNavigation } from '@react-navigation/native'
     import AsyncStorage from '@react-native-async-storage/async-storage'
+import AddTask from '../Screens/AddTask'
 
 
     const Stack = createNativeStackNavigator()
@@ -75,6 +76,7 @@
                     }
                     
                     />
+                <Drawer.Screen name='AddTask' component={AddTask} options={{ title: 'Tasks', headerTintColor: '#00ADB5'}}/>
             </Drawer.Navigator>
         )
     }
