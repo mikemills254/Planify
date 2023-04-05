@@ -1,13 +1,20 @@
 import React from 'react';
 import { StyleSheet, Text, View, StatusBar } from 'react-native';
 import Navigation from './Components/Navigation';
+import { Provider } from 'react-redux';
+import { createStore, applyMiddleware } from 'redux'
+import thunk from 'redux-thunk';
+
+
+const Store = createStore(
+  applyMiddleware(thunk)
+)
 
 export default function App() {
   return (
-    <View style={styles.container}>
-    <StatusBar barStyle='dark-content' backgroundColor='white'/>
-    <Navigation/>
-    </View>
+    <Provider store={Store}>
+      <Navigation/>
+    </Provider>
   );
 }
 

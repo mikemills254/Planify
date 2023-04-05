@@ -6,6 +6,7 @@ import Ionic from 'react-native-vector-icons/Feather'
 import { useNavigation } from '@react-navigation/native'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { auth } from '../Components/FireBaseConfig'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const Login = () => {
     const Navigation = useNavigation()
@@ -19,14 +20,18 @@ const Login = () => {
     }
 
     const OnLoginPressed = async () => {
-        try{
+        try {
             const UserCred = await signInWithEmailAndPassword(auth, Email, Password)
             const user = UserCred.user;
-            // const Email = user.email
-
-            Navigation.replace('AppScreen')
-        }catch(error){
-            Alert.alert('Alert Title', 'Credentials Check',[
+            const UserToken = await user.getIdToken()
+            await AsyncStorage.setItem('UserToken', UserToken)
+    
+            Navigation.reset({
+                index: 0,
+                routes: [{ name: 'AppScreen' }]
+            })
+        } catch (error) {
+            Alert.alert('Error', 'Credentials Check', [
                 {
                     text: 'ok'
                 },
@@ -34,6 +39,7 @@ const Login = () => {
             ])
         }
     }
+    
 
     return (
         <View style={styles.Container}>

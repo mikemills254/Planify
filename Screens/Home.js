@@ -1,22 +1,23 @@
 import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { ScrollView } from 'react-native'
+import { getAuth } from 'firebase/auth'
 
 
 const _COLOR = '#00ADB5'
 
 const Home = () => {
+
     return (
-    <View style={styles.container}>
-        <View style={styles.progress}>
-            <Text style={styles.progressHeader}>Today's Progress Summary</Text>
-            <Text style={{fontWeight: 200, fontSize: 12}}>5 Tasks</Text>
-            <Text style={styles.ProgressTasks}>Next Coming Task: {'\n'} UI Designing {'\n'} Build an API</Text>
+        <View style={styles.container}>
+            <View style={styles.progress}>
+                <Text style={styles.progressHeader}>Today's Progress Summary</Text>
+                <Text style={{fontWeight: 200, fontSize: 12}}>5 Tasks</Text>
+                <Text style={styles.ProgressTasks}>Next Coming Task: {'\n'} UI Designing {'\n'} Build an API</Text>
+            </View>
         </View>
-        
-    </View>
     )
-    }
+}
 
 export default Home
 
