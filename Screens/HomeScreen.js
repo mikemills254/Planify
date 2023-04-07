@@ -65,39 +65,6 @@ useEffect(() => {
         };
         getUserId();
     }, []);
-
-    
-    
-    const DATA = [
-        {
-            id: 1,
-            title: 'Business',
-            icon: <Icon name='briefcase' color='#c1e1ec' size={Size} style={styles.icon}/>,
-            number: 5
-        },
-        {
-            id: 2,
-            title: 'Personal',
-            icon: <Icon name='user' color='#ffd0d7' size={Size} style={styles.icon}/>,
-            number: 4
-
-        },
-        {
-            id: 4,
-            title: 'Home',
-            icon: <Icon name= 'home' color='#bcf5bc' size={Size} style={styles.icon}/>,
-            number: 10
-
-        },
-    ];
-    
-    const Item = ({title, icon, number}) => (
-    <View style={styles.item}>
-        <Text style={styles.title}>{title}</Text>
-        {icon}
-        <Text style={{fontSize: 30, left: 40, bottom: 20}}>{number}</Text>
-    </View>
-    );
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.container}>
@@ -147,12 +114,6 @@ useEffect(() => {
                                         const taskCollection = collection(Db, 'Tasks')
                                         const taskRef = doc(taskCollection, item.id)
                                         deleteDoc(taskRef)
-                                        .then(() => {
-                                            console.log('Task deleted successfully')
-                                        })
-                                        .catch((error) => {
-                                            console.log('Error while deleting tasks', error)
-                                        })
                                     }}
                                 />
                                 <Text style={styles.taskStatusText}>{item.Category}</Text>

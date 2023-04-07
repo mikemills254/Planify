@@ -27,7 +27,6 @@ const Login = () => {
             const UserAccess = await user.getIdToken()
 
             await AsyncStorage.setItem('UserAccess', UserAccess)
-            console.log('User Access Token has been set', UserAccess)
 
             Navigation.reset({
                 index: 0,
