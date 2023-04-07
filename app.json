@@ -5,6 +5,26 @@
     "version": "1.0.0",
     "assetBundlePatterns": [
       "**/*"
-    ]
+    ],
+    "orientation": "portrait",
+    "icon": "./Components/Images/icon.png",
+    "scheme": "myapp",
+    "splash": {
+      "image": "./Components/Images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./Components/Images/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      }
+    }
   }
 }
