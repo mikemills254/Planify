@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Alert,  } from 'react-native'
+import { StyleSheet, Text, View, Alert, SafeAreaView, ScrollView,  } from 'react-native'
 import React,{useState, useEffect} from 'react'
 import Input from '../Components/Input'
 import Button from '../Components/Button'
@@ -23,9 +23,12 @@ const Login = () => {
         try {
             const UserCred = await signInWithEmailAndPassword(auth, Email, Password)
             const user = UserCred.user;
-            const UserToken = await user.getIdToken()
-            await AsyncStorage.setItem('UserToken', UserToken)
-    
+            const UserEmail = user.email
+            const UserAccess = await user.getIdToken()
+
+            await AsyncStorage.setItem('UserAccess', UserAccess)
+            console.log('User Access Token has been set', UserAccess)
+
             Navigation.reset({
                 index: 0,
                 routes: [{ name: 'AppScreen' }]
@@ -42,7 +45,8 @@ const Login = () => {
     
 
     return (
-        <View style={styles.Container}>
+        <ScrollView contentContainerStyle={{flexGrow: 1}}>
+        <SafeAreaView style={styles.Container}>
         <View style={styles.Icon}>
             <Ionic name='check-circle' size={100} color='#00ADB5'/>
         </View>
@@ -84,7 +88,8 @@ const Login = () => {
             Navigation.navigate('SignUp')
             }}
         />
-        </View>
+        </SafeAreaView>
+        </ScrollView>
     )
 }
 
@@ -103,6 +108,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         padding: 50,
-        marginBottom: 50
+        // marginBottom: 30,
+        marginTop: '10%'
     }
 })

@@ -1,8 +1,9 @@
 import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator,Dimensions, Image } from 'react-native'
 import React, {useEffect, useState} from 'react'
-import Home from '../Screens/Home'
+import HomeScreen from '../Screens/HomeScreen'
 import Login from '../Screens/Login'
 import SignUp from '../Screens/SignUp'
+import AddTasks from '../Screens/AddTasks'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { createDrawerNavigator } from '@react-navigation/drawer'
 import { NavigationContainer } from '@react-navigation/native'
@@ -31,19 +32,17 @@ const CustomDrawerContent = ({ navigation}) => {
     const auth = getAuth()
     const [userEmail, setUserEmail] = useState('')
 
-    useEffect(() => {
-        const UserCred = onAuthStateChanged(auth, (user) => {
-            if(user){
-                setUserEmail(user.email)
-            }
-        })
-            return UserCred
-
-    }, [auth])
+    const EmailAddress = async () => {
+        const myEmail = await AsyncStorage.getItem('UserEmail')
+        setUserEmail(myEmail)
+    }
+    EmailAddress();
 
     const onLogOutPress = async () => {
     try {
         await auth.signOut();
+        AsyncStorage.removeItem('UserAccess')
+        console.log('Access Token Removed.')
         navigation.replace('AuthScreen', {
             screen: 'Login'
         });
@@ -68,7 +67,7 @@ return (
         flexDirection: 'row'
         }
     }
-    onPress={() => {navigation.navigate('AppScreen')}}>
+    onPress={() => {navigation.navigate('Home')}}>
         <Icon name='home' size={20} color='white'/>
         <Text style={{marginHorizontal: 40, color: 'white', fontWeight: 600}}>HomePage</Text>
     </TouchableOpacity>
@@ -87,7 +86,7 @@ const DrawerScreen = ()=> {
         >
             <Drawer.Screen 
                 name='Home' 
-                component={Home} 
+                component={HomeScreen} 
                 options={{
                     title: 'HomePage', 
                     headerShown: true,
@@ -101,8 +100,22 @@ const DrawerScreen = ()=> {
                     }
                     }
                 }
-                
                 />
+                <Drawer.Screen 
+                    name='Tasks' 
+                    component={AddTasks} 
+                    options={{
+                        title: 'New Task',
+                        headerTintColor: '#00ADB5',
+                        headerTitleStyle: {
+                            color: '#00ADB5',
+                            textAlign: 'center'
+                        }
+                        
+                        
+                        }}
+                    
+                    />
         </Drawer.Navigator>
     )
 }
@@ -113,7 +126,7 @@ const [isLoading, setIsLoading] = useState(true)
 
 useEffect(() => {
     const checkUserToken = async () => {
-        const token = await AsyncStorage.getItem('UserToken');
+        const token = await AsyncStorage.getItem('UserAccess');
         setUserToken(token);
         setIsLoading(false)
     };

@@ -7,6 +7,7 @@ import { useNavigation } from '@react-navigation/native'
 import { auth, Db } from  '../Components/FireBaseConfig'
 import { collection, doc, setDoc } from 'firebase/firestore'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const Socials = () => {
     return(
@@ -45,34 +46,44 @@ const SignUp = ({navigation}) => {
     const onPrivatePolicyPressed = () => {
         console.warn("Private Policy")
     }
-    const OnSignUpPress = async () => {
-        try{
-            const UserCred = await createUserWithEmailAndPassword(auth, Email, Password, Username);
-            const user = UserCred.user;
-            const email = user.email
+const OnSignUpPress = async () => {
+    try {
+        const UserCred = await createUserWithEmailAndPassword(
+        auth,
+        Email,
+        Password,
+        Username
+        );
+        const user = UserCred.user;
+        const email = user.email;
+        const UserToken = user.uid;
+        const UserAccess = user.getIdToken()
+        await AsyncStorage.setItem('UserEmail', email);
+        await AsyncStorage.setItem('UserToken', UserToken);
+        await AsyncStorage.setItem('UserAccess', JSON.stringify(UserAccess));
 
-            console.log(email);
-
-            const docRef = doc(collection(Db, 'User'), user.uid)
-            await setDoc(docRef, {
-                Username: Username,
-                EmailAddress: Email,
-                Password: Password
-        })
-            navigation.navigate('AppScreen')
-        }catch (error){
-            Alert.alert('Alert Title', 'Incorrect Credetials',[
-                {
-                    text: 'Ok',
-                }
-            ])
-            console.log(error)
-        }
-
+    
+        const docRef = doc(collection(Db, 'User'), user.uid);
+        await setDoc(docRef, {
+        Username: Username,
+        EmailAddress: Email,
+        Password: Password,
+        });
+        navigation.navigate('AppScreen');
+    } catch (error) {
+        Alert.alert('Alert Title', 'Incorrect Credetials', [
+        {
+            text: 'Ok',
+        },
+        ]);
+        console.log(error);
     }
+    };
+    
 
     return (
-        <View style={styles.Container}>
+        <ScrollView contentContainerStyle={{flexGrow: 1}}>
+        <SafeAreaView style={styles.Container}>
             <View style={styles.Icon}>
                 <Ionic name='check-circle' size={100} color='#00ADB5'/>
             </View>
@@ -111,7 +122,9 @@ const SignUp = ({navigation}) => {
                         Navigation.navigate('Login')
                     }}
                 />
-        </View>        
+                
+        </SafeAreaView> 
+        </ScrollView>       
     )
 }
 
