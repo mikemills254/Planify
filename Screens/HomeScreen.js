@@ -97,7 +97,7 @@ useEffect(() => {
                 </View>
                 
                 <View style={styles.Taskscontainer}>
-                <Text style={styles.headerInfo}>TODAY'S TASK</Text>
+                <Text style={styles.headerInfo}>Your Tasks</Text>
                 <FlatList 
                     data={tasks}
                     renderItem={({ item }) => (

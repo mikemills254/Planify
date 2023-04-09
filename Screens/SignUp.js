@@ -8,8 +8,27 @@ import { auth, Db } from  '../Components/FireBaseConfig'
 import { collection, doc, setDoc } from 'firebase/firestore'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { getAuth, signInWithRedirect, GoogleAuthProvider } from 'firebase/auth'
 
 const Socials = () => {
+    const OnGoogleSign = () => {
+        const auth = getAuth()
+        const provider = new GoogleAuthProvider()
+        signInWithRedirect(auth, provider)
+        .then((result) => {
+            const credential = GoogleAuthProvider.credentialFromResult(result);
+            const token = credential.accessToken;
+            // The signed-in user info.
+            const user = result.user;
+
+            AsyncStorage.setItem('UserToken',token),
+            AsyncStorage.setItem('UserEmail', user.email)
+        }).catch((error) => {
+            console.log(error.message, error.code)
+        })
+    }
+    
+    
     return(
         <View style={{flexDirection: 'row', marginVertical: 20, marginHorizontal: '10%'}}>
             <Button
@@ -18,6 +37,7 @@ const Socials = () => {
                 fgColor="#DD4D44"
                 bgColor= "#FAE9EA"
                 Icon='logo-google'
+                onPress={() => {OnGoogleSign()}}
             />
             <Button
                 Icon='logo-facebook' 
@@ -41,10 +61,10 @@ const SignUp = ({navigation}) => {
         setShowPassword(!showPassword);
     }
     const onTermsOfUsePressed = () => {
-        console.warn("Terms Of use")
+        console.log("Terms Of use")
     }
     const onPrivatePolicyPressed = () => {
-        console.warn("Private Policy")
+        console.log("Private Policy")
     }
 const OnSignUpPress = async () => {
     try {
@@ -58,11 +78,11 @@ const OnSignUpPress = async () => {
         const email = user.email;
         const UserToken = user.uid;
         const UserAccess = user.getIdToken()
+
         await AsyncStorage.setItem('UserEmail', email);
         await AsyncStorage.setItem('UserToken', UserToken);
         await AsyncStorage.setItem('UserAccess', JSON.stringify(UserAccess));
 
-    
         const docRef = doc(collection(Db, 'User'), user.uid);
         await setDoc(docRef, {
         Username: Username,
@@ -71,12 +91,16 @@ const OnSignUpPress = async () => {
         });
         navigation.navigate('AppScreen');
     } catch (error) {
-        Alert.alert('Alert Title', 'Incorrect Credetials', [
+        Alert.alert('SigIn Error', error.code, [
         {
             text: 'Ok',
+            onPress: () => {
+                setEmail(''),
+                setUsername(''),
+                setPassword('')
+            }
         },
         ]);
-        console.log(error);
     }
     };
     
@@ -114,9 +138,9 @@ const OnSignUpPress = async () => {
                     <Text style={{color: "#FDB075"}} onPress={onTermsOfUsePressed}> terms of use</Text> and
                     <Text style={{color: "#FDB075"}} onPress={onPrivatePolicyPressed}> privacy policy</Text>
                 </Text>
-                <Socials/>
+                {/* <Socials/> */}
                 <Button
-                    type='TERTIARY'
+                    type='PRIMARY'
                     text='Have an Account? Login'
                     onPress={() => {
                         Navigation.navigate('Login')

@@ -25,19 +25,25 @@ const Login = () => {
             const user = UserCred.user;
             const UserEmail = user.email
             const UserAccess = await user.getIdToken()
+            const CurrentUser = await user.CurrentUser
 
             await AsyncStorage.setItem('UserAccess', UserAccess)
+            await AsyncStorage.setItem('UserEmail', UserEmail)
 
             Navigation.reset({
                 index: 0,
                 routes: [{ name: 'AppScreen' }]
             })
         } catch (error) {
-            Alert.alert('Error', 'Credentials Check', [
+            Alert.alert('Login Error', error.code, [
                 {
-                    text: 'ok'
+                    text: 'ok',
+                    onPress: () => {
+                        setEmail(''),
+                        setPassword('')
+                    }
+                    
                 },
-                console.log(error)
             ])
         }
     }

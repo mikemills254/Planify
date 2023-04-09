@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator,Dimensions, Image } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator,Dimensions, Image, Pressable, Alert} from 'react-native'
 import React, {useEffect, useState} from 'react'
 import HomeScreen from '../Screens/HomeScreen'
 import Login from '../Screens/Login'
@@ -7,12 +7,13 @@ import AddTasks from '../Screens/AddTasks'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { createDrawerNavigator } from '@react-navigation/drawer'
 import { NavigationContainer } from '@react-navigation/native'
-import { getAuth, onAuthStateChanged} from 'firebase/auth'
+import { getAuth, deleteUser } from 'firebase/auth'
 import Icon from 'react-native-vector-icons/Ionicons'
 const _COLOR = '#00ADB5'
 import { useNavigation } from '@react-navigation/native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import User from './Images/user.png'
+
 
 const Stack = createNativeStackNavigator()
 const Drawer = createDrawerNavigator()
@@ -31,6 +32,7 @@ const LoginScreen = () => {
 const CustomDrawerContent = ({ navigation}) => {
     const auth = getAuth()
     const [userEmail, setUserEmail] = useState('')
+    const  [myUserName, setUsername] = useState('')
 
     const EmailAddress = async () => {
         const myEmail = await AsyncStorage.getItem('UserEmail')
@@ -38,18 +40,49 @@ const CustomDrawerContent = ({ navigation}) => {
     }
     EmailAddress();
 
-    const onLogOutPress = async () => {
-    try {
-        await auth.signOut();
-        AsyncStorage.removeItem('UserAccess')
-        console.log('Access Token Removed.')
-        navigation.replace('AuthScreen', {
-            screen: 'Login'
-        });
-    } catch (error) {
-        console.log(error.code, error.message);
+    const getUserName = async() => {
+        const userName = await AsyncStorage.getItem('UserName')
+        setUsername(userName)
     }
+    getUserName();
+
+    const onLogOutPress = async () => {
+        try {
+            await auth.signOut().then(() => {
+                Alert.alert('Loging out', 'Are you sure?', [
+                    {
+                        text: 'ok',
+                        onPress: () => {
+                            navigation.replace('AuthScreen', {
+                                screen: 'Login'
+                            })
+                        }
+                    },
+                    {
+                        text: 'Cancel',
+                    }
+                ])
+            })
+            AsyncStorage.removeItem('UserAccess')
+            AsyncStorage.removeItem('UserEmail')
+            // console.log('Access Token Removed.')
+        } catch (error) {
+            console.log(error.code, error.message);
+        }
     };
+    
+
+    const DeleteAccount = async () => {
+        const user = await AsyncStorage.getItem('UserToken')
+        console.log(user);
+
+        deleteUser(user).then(() => {
+            console.log('UserDeleted')
+        }).catch((error) => {
+            console.log(error)
+        })
+    };
+    
 
 
 return (
@@ -57,24 +90,26 @@ return (
     <View style={styles.DrawerSide}>
         <Image source={User} resizeMode='cover' style={{width: 100, height: 100, borderRadius: 100, marginVertical: 10}}/>
         <Text style={styles.mail}>{userEmail}</Text>
+        <Text>{myUserName}</Text>
     </View>
-    <TouchableOpacity style={{
-        backgroundColor: _COLOR, 
+    <Pressable style={{
         marginVertical: 20, 
-        padding: 15, 
-        marginHorizontal: 10, 
-        alignItems: 'center', 
-        flexDirection: 'row'
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 10,
+        width: '90%',
+        borderWidth: 0,
+        marginHorizontal: 15
         }
     }
     onPress={() => {navigation.navigate('Home')}}>
-        <Icon name='home' size={20} color='white'/>
-        <Text style={{marginHorizontal: 40, color: 'white', fontWeight: 600}}>HomePage</Text>
-    </TouchableOpacity>
-    <TouchableOpacity onPress={onLogOutPress} style={styles.logOut}>
-        <Icon name='exit-outline' color='white' size={25}/>
+        <Icon name='home' size={25} color={_COLOR}/>
+        <Text style={styles.Out}>HomePage</Text>
+    </Pressable>
+    <Pressable onPress={onLogOutPress} style={styles.logOut}>
+        <Icon name='exit-outline' color={_COLOR} size={25}/>
         <Text style={styles.Out}>Logout</Text>
-    </TouchableOpacity>
+    </Pressable>    
     </View>
 )}
 
@@ -167,30 +202,30 @@ export default Navigation
 const styles = StyleSheet.create({
     Drawer: {
         flex: 1,
-        
     },
     logOut: {
         position: 'absolute',
-        bottom: 10,
+        bottom: 15,
         flexDirection: 'row',
         alignItems: 'center',
         padding: 10,
-        backgroundColor: _COLOR,
         width: '90%',
-        marginHorizontal: 15
+        borderWidth: 0,
+        marginHorizontal: 15,
+        // backgroundColor: 'red'
     },
     Out: {
-        fontSize: 20,
-        color: 'white',
-        // textAlign: 'center',
-        fontWeight: 'bold',
-        marginHorizontal: 30
+        fontSize: 15,
+        fontWeight: 500,
+        marginHorizontal: 10,
+        color: _COLOR
     },
     DrawerSide: {
         height: Dimensions.get('screen').height * 0.25,
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: _COLOR,
+        padding: 10
     },
     mail: {
         marginTop: 25,
